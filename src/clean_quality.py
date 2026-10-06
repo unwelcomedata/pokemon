@@ -199,6 +199,30 @@ def clean_table(
     return cleaned.reset_index(drop=True)
 
 
+def titlecase_sql(column: str) -> str:
+    """Return a DuckDB SQL expression that title-cases a (lowercase) string column.
+
+    DuckDB has no built-in ``INITCAP``/title-case, so this builds the expression
+    from primitives: lowercase the input, split on hyphen or space, capitalize
+    each token (first char upper, remainder as-is), then rejoin with a hyphen.
+
+    This preserves hyphenated slugs (e.g. ``ho-oh`` -> ``Ho-Oh``,
+    ``mr-mime`` -> ``Mr-Mime``), which is how PokéAPI-style slugs read as display
+    names. Single-word inputs (``grass`` -> ``Grass``) are the common case.
+
+    Args:
+        column: The column name (or SQL expression) to title-case.
+
+    Returns:
+        A SQL string suitable for inlining into a SELECT list.
+    """
+    return (
+        f"array_to_string(list_transform("
+        f"string_split_regex(lower({column}), '[ -]'), "
+        f"x -> upper(x[1]) || x[2:]), '-')"
+    )
+
+
 def run_sql(sql: str, con: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     """Run arbitrary SQL against the open DuckDB connection and return a DataFrame.
 

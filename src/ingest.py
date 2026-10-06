@@ -254,6 +254,170 @@ def download_file(url: str, dest: Path, headers: dict | None = None, timeout: in
 # Source-driven ingest (reads config.yaml sources block)
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# PokéAPI ingest (keyless public REST API)
+# ---------------------------------------------------------------------------
+
+# The six base stats, in the consistent order PokéAPI returns them, mapped to
+# the snake_case column names used in the raw table.
+_POKEAPI_STAT_COLUMNS: dict[str, str] = {
+    "hp": "hp",
+    "attack": "attack",
+    "defense": "defense",
+    "special-attack": "special_attack",
+    "special-defense": "special_defense",
+    "speed": "speed",
+}
+
+
+def _fetch_json_cached(
+    url: str,
+    cache_file: Path,
+    headers: dict | None = None,
+    timeout: int = 30,
+    max_retries: int = 4,
+    rate_limit_seconds: float = 0.4,
+) -> dict[str, Any]:
+    """Fetch a JSON URL, caching the raw response to ``cache_file``.
+
+    If ``cache_file`` already exists it is read straight from disk with no
+    network call (the pull is resumable and re-runs are free). On a cache miss
+    the function sleeps ``rate_limit_seconds`` before hitting the network and
+    retries with exponential backoff on 429/5xx responses.
+
+    PokéAPI is Cloudflare-fronted and returns HTTP 403 to the default
+    Python/urllib user-agent, so a browser User-Agent (``_DEFAULT_HEADERS``)
+    is always sent.
+
+    Returns the parsed JSON as a dict.
+    """
+    if cache_file.exists():
+        return json.loads(cache_file.read_text(encoding="utf-8"))
+
+    hdrs = {**_DEFAULT_HEADERS, **(headers or {})}
+    time.sleep(rate_limit_seconds)
+
+    for attempt in range(max_retries + 1):
+        resp = requests.get(url, headers=hdrs, timeout=timeout)
+        if resp.status_code == 429 or resp.status_code >= 500:
+            if attempt < max_retries:
+                wait = rate_limit_seconds * (2 ** attempt)
+                print(f"  ⚠ {resp.status_code} on {url} — retrying in {wait:.1f}s")
+                time.sleep(wait)
+                continue
+        resp.raise_for_status()
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(resp.text, encoding="utf-8")
+        return resp.json()
+
+    resp.raise_for_status()  # exhausted retries — raise the last error
+    return {}  # unreachable
+
+
+def ingest_pokeapi(
+    cfg: dict,
+    rate_limit_seconds: float | None = None,
+    progress_every: int = 100,
+) -> pd.DataFrame:
+    """Ingest base-stat data for all Pokémon species from PokéAPI.
+
+    Walks every species (all 9 generations, ~1025 species). For each species it
+    fetches the species JSON (``/pokemon-species/{id}``) and the species'
+    *default* variety pokemon JSON (``/pokemon/{id}``, where base stats live).
+    Alternate forms (Mega/Gigantamax/regional) are intentionally excluded — one
+    canonical row per species.
+
+    Every raw response is cached to ``data/raw/species/{id}.json`` and
+    ``data/raw/pokemon/{id}.json`` and skipped on re-runs, so the pull is
+    resumable and re-execution is instant (PokéAPI asks clients to cache
+    aggressively). The polite delay only applies on actual network calls.
+
+    This assembles the untransformed API JSON into a tidy table; it does not
+    clean or derive anything beyond summing the six base stats — all real
+    cleaning belongs in ``02-clean``.
+
+    Args:
+        cfg:                 Loaded config dict (from ``load_config()``).
+        rate_limit_seconds:  Delay between network calls. Defaults to the
+                             ``sources.pokeapi.rate_limit_seconds`` config value.
+        progress_every:      Print progress every N species.
+
+    Returns:
+        One row per species with columns: ``species_id``, ``name``,
+        ``generation``, ``is_legendary``, ``is_mythical``, ``type_1``,
+        ``type_2``, ``hp``, ``attack``, ``defense``, ``special_attack``,
+        ``special_defense``, ``speed``, ``base_stat_total``.
+    """
+    source = cfg["sources"]["pokeapi"]
+    base_url: str = source["base_url"].rstrip("/")
+    if rate_limit_seconds is None:
+        rate_limit_seconds = float(source.get("rate_limit_seconds", 1.5))
+
+    raw_dir = Path(cfg["paths"]["data_raw"])
+    species_dir = raw_dir / "species"
+    pokemon_dir = raw_dir / "pokemon"
+
+    # Full species list (name + detail URL). Cached like everything else.
+    listing = _fetch_json_cached(
+        f"{base_url}/pokemon-species?limit=100000",
+        raw_dir / "pokemon-species-list.json",
+        rate_limit_seconds=rate_limit_seconds,
+    )
+    results = listing["results"]
+    total = len(results)
+    print(f"PokéAPI: {total} species to ingest (rate limit {rate_limit_seconds}s on network calls)")
+
+    records: list[dict[str, Any]] = []
+    for i, entry in enumerate(results, start=1):
+        # The species id is the trailing path segment of its detail URL.
+        species_id = int(entry["url"].rstrip("/").rsplit("/", 1)[-1])
+
+        species = _fetch_json_cached(
+            f"{base_url}/pokemon-species/{species_id}/",
+            species_dir / f"{species_id}.json",
+            rate_limit_seconds=rate_limit_seconds,
+        )
+
+        # The default variety is the canonical form whose /pokemon entry has the stats.
+        default_url = next(
+            (v["pokemon"]["url"] for v in species["varieties"] if v.get("is_default")),
+            species["varieties"][0]["pokemon"]["url"],
+        )
+        pokemon_id = int(default_url.rstrip("/").rsplit("/", 1)[-1])
+
+        pokemon = _fetch_json_cached(
+            f"{base_url}/pokemon/{pokemon_id}/",
+            pokemon_dir / f"{pokemon_id}.json",
+            rate_limit_seconds=rate_limit_seconds,
+        )
+
+        stats = {s["stat"]["name"]: s["base_stat"] for s in pokemon["stats"]}
+        types = [t["type"]["name"] for t in pokemon["types"]]
+
+        record: dict[str, Any] = {
+            "species_id": species_id,
+            "name": entry["name"],
+            "generation": species["generation"]["name"],
+            "is_legendary": bool(species["is_legendary"]),
+            "is_mythical": bool(species["is_mythical"]),
+            "type_1": types[0] if types else None,
+            "type_2": types[1] if len(types) > 1 else None,
+        }
+        for api_name, col in _POKEAPI_STAT_COLUMNS.items():
+            record[col] = int(stats[api_name])
+        record["base_stat_total"] = sum(
+            record[col] for col in _POKEAPI_STAT_COLUMNS.values()
+        )
+        records.append(record)
+
+        if i % progress_every == 0 or i == total:
+            print(f"  …{i}/{total} species")
+
+    df = pd.DataFrame.from_records(records)
+    df = df.sort_values("species_id").reset_index(drop=True)
+    return df
+
+
 def ingest_source(
     name: str,
     cfg: dict,

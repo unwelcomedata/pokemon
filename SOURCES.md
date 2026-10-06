@@ -50,7 +50,50 @@ not applicable or unknown, write "N/A" or "unknown" so it's clear it was conside
 
 ## Sources
 
-<!-- Add your sources below this line -->
+### PokéAPI
+- **Publisher:** PokéAPI (pokeapi.co) — a community-run, open REST API of Pokémon game data.
+- **URL:** https://pokeapi.co/api/v2 (endpoints `/pokemon-species`, `/pokemon-species/{id}`, `/pokemon/{id}`)
+- **Format:** JSON REST API (keyless, public). Pulled per-species and cached verbatim to `data/raw/`.
+- **License:** PokéAPI data is freely available for use. Pokémon names, stats, and
+  types are © Nintendo / Game Freak / The Pokémon Company — used here nominatively
+  (fun-tier, non-commercial, attributed).
+- **Fields used:** per species — base stats (HP, Attack, Defense, Sp. Atk, Sp. Def,
+  Speed), primary/secondary type, generation, legendary/mythical flags.
+- **Coverage:** all 9 generations, National Dex species 1–1025. Retrieved 2026-10-05.
+- **How the source collects the data:** PokéAPI transcribes the official game data
+  (current/latest generation values) from the Pokémon video games into a structured
+  API. It is a faithful mirror of game stats, not a survey or estimate.
+- **How the source defines the data:** "base stats" are the per-species base values
+  used by the games' stat formulas (0–255 per stat). We take the **default variety**
+  of each species (`is_default` form) — i.e. the canonical base form.
+- **⭐ Scope decision (the load-bearing caveat — carry into chart captions):**
+  **Base forms only.** We use one canonical default-form row per species (1025 total);
+  **alternate forms, Mega Evolutions, Gigantamax, regional variants, and Paradox forms
+  are EXCLUDED** (~326 non-default `/pokemon` entries dropped). Consequently our
+  *averages* run slightly below form-inclusive community encyclopedias: e.g. the
+  Legendary/Mythical average base-stat total is ~592 here vs ~626 on Bulbapedia (which
+  includes high-stat Mega/alternate legendary forms), and Steel's average Defense is
+  ~111 here vs ~109–110 elsewhere depending on form inclusion. These are **scope
+  differences, not errors** — the rankings and directional claims (Steel = highest
+  Defense; legendaries exceed the field on every axis; Gen 9 highest average total)
+  hold either way. Any published averaged chart states: *"Base forms only; averages
+  exclude megas & alternate forms."*
+- **Methodology changes / series breaks:** base stats were rebalanced for some species
+  in Gen VI (the "Pokémon Bank" era, e.g. several Normal-types gained stats). PokéAPI
+  reflects **current/latest** values, not per-game historical values — so a
+  cross-generation comparison here compares species by their *current* stats, not the
+  stats as they shipped in each era. Documented; acceptable for a current-snapshot
+  analysis.
+- **Known controversies / debates:** "legendary vs mythical" classification and what
+  counts as a distinct species vs a form are community/publisher conventions with
+  edge cases (Ultra Beasts, Paradox forms, convergent species). We follow PokéAPI's
+  `is_legendary`/`is_mythical` flags and default-variety definition.
+- **Notes:** independent cross-checks (PokemonDB, Bulbapedia, PokemonRef, et al.)
+  confirmed the counts (94 legendary/mythical, 931 field) and the structural claims;
+  see the independent validation report in `artifacts/` (gitignored).
+- **Retrieved:** 2026-10-05
+
+<!-- Add additional sources below this line -->
 
 ---
 
