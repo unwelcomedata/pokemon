@@ -70,6 +70,9 @@ One radar overlaying the **average** fingerprint of three contrasting types:
 
 [![Radar overlay of the average stat shape for Steel, Electric, and Normal type Pokémon, with Steel pushed out on the defensive axes, Electric on Special Attack and Speed, and Normal sitting in the middle.](docs/04_steel_electric_normal_overlay.png)](docs/04_steel_electric_normal_overlay.png)
 
+Additional charts are available in the repo (`docs/`) — including a full
+18-type facet of average stat fingerprints, one radar per primary type.
+
 ---
 
 ## How it was measured
