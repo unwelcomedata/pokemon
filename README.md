@@ -1,4 +1,113 @@
-# pokemon
+**[@unwelcomedata](https://github.com/unwelcomedata)** · data from public sources
+Follow for new charts: [X](https://x.com/unwelcomedata) · [Bluesky](https://bsky.app/profile/unwelcomedata.bsky.social)
+
+# Pokémon stat fingerprints
+
+Every Pokémon is just six numbers — HP, Attack, Defense, Sp. Atk, Sp. Def, and
+Speed. Plot those six on a radar and each one gets a **shape**: a stat
+fingerprint. This looks at those fingerprints across **1,025 species** (all nine
+generations, from [PokéAPI](https://pokeapi.co/)) — for iconic individuals, for
+whole types, for each generation, and for legendaries versus everything else.
+
+**The findings:**
+
+- **Steel is the tank.** Of all 18 primary types, Steel has the highest average
+  **Defense** (~111).
+- **The games keep getting stronger.** Generation 9 species have the highest
+  average base-stat total (**457.4 BST**) — power creep is real.
+- **Legendaries are better at everything.** The legendary/mythical group averages
+  **592 BST** versus **411** for the ordinary field — and they sit outside the
+  field on *every one* of the six axes, not just one or two.
+- There are **94** legendary/mythical species and **931** ordinary ("field")
+  species in the set.
+
+---
+
+_Click any chart to open it at full resolution._
+
+## 1. Iconic stat fingerprints
+
+Twelve well-known Pokémon, each drawn as its own radar on the raw **0–255** stat
+scale, so you can read the archetypes directly: Shuckle's enormous defensive
+wall, Alakazam's glass-cannon spike, Blissey's wall of HP. These are individual
+species, not averages.
+
+[![Radar fingerprints of twelve iconic Pokémon shown as small multiples, each a six-axis shape from HP to Speed on the 0 to 255 stat scale.](docs/01_iconic_fingerprints_facet.png)](docs/01_iconic_fingerprints_facet.png)
+
+## 2. Legendaries vs. the field
+
+One radar overlaying the **average** legendary/mythical fingerprint against the
+**average** of the ordinary field. The legendary shape fully contains the field
+shape — legendaries are bigger on every axis.
+
+> **Base forms only.** These averages use one canonical base form per species;
+> Mega Evolutions, Gigantamax, regional variants, and alternate/Paradox forms are
+> excluded. That's why this set's averages run slightly below form-inclusive fan
+> wikis (e.g. legendary avg ~592 here vs ~626 on Bulbapedia). Scope difference,
+> not an error — see [SOURCES.md](SOURCES.md).
+
+[![Radar overlay comparing the average legendary and mythical Pokémon fingerprint, 592 base-stat total, against the ordinary field average of 411, with the legendary shape outside the field on all six axes.](docs/02_legendary_vs_field_overlay.png)](docs/02_legendary_vs_field_overlay.png)
+
+## 3. Power creep by generation
+
+One radar per generation (I–IX) showing each generation's **average** stats. The
+shapes grow outward over time, with Generation 9 the largest — the newest
+Pokémon are the strongest on average.
+
+> **Base forms only** — averages exclude megas and alternate forms (see note
+> above and [SOURCES.md](SOURCES.md)).
+
+[![Radar small multiples, one per Pokémon generation from I to IX, each showing the average six-stat shape, with the shapes growing outward across generations and Generation 9 the largest.](docs/03_generation_power_creep_facet.png)](docs/03_generation_power_creep_facet.png)
+
+## 4. Three types, three shapes
+
+One radar overlaying the **average** fingerprint of three contrasting types:
+**Steel** (the defensive wall), **Electric** (fast and special-leaning), and
+**Normal** (the balanced middle). Same six axes, three very different shapes.
+
+> **Base forms only** — averages exclude megas and alternate forms (see note
+> above and [SOURCES.md](SOURCES.md)).
+
+[![Radar overlay of the average stat shape for Steel, Electric, and Normal type Pokémon, with Steel pushed out on the defensive axes, Electric on Special Attack and Speed, and Normal sitting in the middle.](docs/04_steel_electric_normal_overlay.png)](docs/04_steel_electric_normal_overlay.png)
+
+---
+
+## How it was measured
+
+Each Pokémon's six base stats come straight from PokéAPI (the current/latest
+game values). Chart 1 plots individual species on the raw 0–255 stat scale.
+Charts 2–4 are **averages**, normalized so the typical shape fills the radar
+frame — the comparison is between shapes, so the normalization is shared within
+each chart and the rankings are unaffected.
+
+The one honest limit worth repeating: everything here is **base forms only** —
+one canonical form per species. Mega Evolutions, Gigantamax, regional variants,
+and Paradox forms are left out, so these averages read a touch lower than
+encyclopedias that fold those high-stat forms in. The direction of every finding
+(Steel tankiest, Gen 9 strongest, legendaries above the field everywhere) holds
+regardless.
+
+## The data
+
+The full per-species dataset is published here:
+
+- **[pokemon_base_stats_v1.csv](export/pokemon_base_stats_v1.csv)** — 1,025
+  species × 15 columns (id, name, generation, legendary/mythical flags, both
+  types, the six base stats, and base-stat total).
+- **[Codebook](export/pokemon_base_stats_v1_codebook.md)** — a plain-English
+  description of every column.
+
+## Sources & license
+
+Full attribution and the methodology write-up are in
+**[SOURCES.md](SOURCES.md)**.
+
+Data is from **[PokéAPI](https://pokeapi.co/)** — a community-run, keyless public
+REST API of Pokémon game data. Pokémon names, stats, and types are
+© Nintendo / Game Freak / The Pokémon Company, used here nominatively
+(fun-tier, non-commercial, attributed).
+
+---
 
 > **AI-Assisted Development**
 > This project was built with the assistance of [Kiro](https://kiro.dev),
@@ -6,167 +115,3 @@
 > methodology choices, and published findings are the responsibility of the
 > author. AI was used for code generation, data pipeline construction, and
 > research assistance — not for analysis conclusions or editorial judgment.
-
----
-
-## Data Sources
-
-All data sources are documented in [SOURCES.md](SOURCES.md) with full
-attribution, URLs, licenses, and retrieval notes.
-
-Source provenance is also recorded inside the project database:
-
-```sql
--- Open data/project.duckdb and run:
-SELECT * FROM _sources;
-```
-
----
-
-## Project Structure
-
-```
-pokemon/
-├── config.yaml              ← sources, paths, export settings — edit this first
-├── SOURCES.md               ← full data source attribution
-├── requirements.txt
-├── data/
-│   ├── raw/                 ← original downloaded files, never modified
-│   ├── interim/             ← cleaned Parquet files (1:1 match DuckDB table names)
-│   ├── processed/           ← analysis-ready Parquet files
-│   └── project.duckdb       ← single-file database for the project
-├── export/                  ← packaged datasets (CSV, Excel, Parquet + codebook)
-├── outputs/                 ← exploratory chart PNGs (from 04-viz)
-│   └── social/             ← publication-ready charts for posting (from 04b-viz-social)
-├── scripts/
-│   ├── README.md            ← pipeline run order and conventions
-│   ├── ingest_all.py        ← reproducible ingestion
-│   ├── clean_all.py         ← standardize raw tables
-│   └── prepare_export.py    ← build final export
-├── notebooks/
-│   ├── 00-explore.ipynb     ← DuckDB query sandbox
-│   ├── 01-ingest.ipynb      ← fetch sources → data/raw/ → DuckDB
-│   ├── 02-clean.ipynb       ← clean + quality checks → data/interim/
-│   ├── 03-prepare.ipynb     ← feature engineering + export packaging
-│   ├── 04-viz.ipynb         ← exploratory charts → outputs/
-│   ├── 04b-viz-social.ipynb ← publication social charts → outputs/social/
-│   └── 05-analysis.ipynb    ← statistical analysis + findings
-└── src/
-    ├── ingest.py            ← fetch helpers (caching, rate limiting)
-    ├── clean_quality.py     ← DuckDB cleaning + quality reports + _sources
-    ├── prepare.py           ← PII stripping, codebook, packaging
-    ├── viz.py               ← matplotlib chart builders (exploratory)
-    └── viz_social.py        ← Altair + vl-convert social export
-```
-
----
-
-## Workflow
-
-### 1. Configure `config.yaml`
-
-Add each data source under the `sources:` block before ingesting:
-
-```yaml
-sources:
-  my_source:
-    url: https://example.gov/data/table
-    type: html_table      # html_table | html_scrape | csv | json
-    table_index: 0
-    js_render: false
-```
-
-### 2. Document sources in `SOURCES.md`
-
-Before ingesting any data, add an entry to `SOURCES.md` for each source:
-- Full URL
-- Publisher / agency
-- License
-- Fields used
-- Any caveats
-
-### 3. Ingest (`01-ingest.ipynb`)
-
-```python
-from src.ingest import load_config, ingest_source
-cfg = load_config("config.yaml")
-df = ingest_source("my_source", cfg)
-```
-
-Raw files land in `data/raw/` untouched. All tables load into DuckDB at
-`data/project.duckdb` with source metadata written to `_sources`.
-
-### 4. Clean (`02-clean.ipynb`)
-
-```python
-from src.clean_quality import get_connection, clean_table, quality_report, save_interim
-con = get_connection(cfg)
-df_clean = clean_table(df, "my_source_raw", con, cast_map={"year": "INTEGER"})
-quality_report(df_clean, "my_source_clean", con)
-save_interim(df_clean, cfg, "my_source_clean.parquet")
-```
-
-### 5. Prepare & export (`03-prepare.ipynb`)
-
-```python
-from src.prepare import package_dataset
-package_dataset(df, cfg, name="my_dataset_v1",
-                codebook={"col": "description"},
-                notes="Source: Agency. License: Public domain.")
-```
-
-### 6. Visualize (`04-viz.ipynb` + `04b-viz-social.ipynb`)
-
-**04-viz** is for exploratory charting (matplotlib). Output goes to `outputs/`.
-
-```python
-from src.viz import ranked_bar_chart, save_chart
-fig = ranked_bar_chart(df, x="state", y="rate", title="Top 10 States", top_n=10,
-                       preset="instagram_portrait")
-save_chart(fig, cfg, "top10_states", preset="instagram_portrait",
-           add_watermark="@unwelcomedata")
-```
-
-**04b-viz-social** is for publication-ready charts (Altair + vl-convert).
-Output goes to `outputs/social/`. Only curated, validated charts go here.
-
-```python
-from src.viz_social import save_social
-save_social(chart, cfg, 'my_social_chart', preset='twitter_landscape')
-```
-
-### 7. Analyze (`05-analysis.ipynb`)
-
-Statistical analysis, regression, group comparisons. Always read from the
-**export** parquet (not raw DuckDB tables) to ensure consistency with
-published data.
-
----
-
-## Publishing (when the project is ready to go public)
-
-Full procedure is in `.kiro/steering/public-release.md`. The essentials:
-
-1. **Validate first (required gate).** Ship a `scripts/validate_charts.py` that
-   re-checks the chart data against DuckDB (export drift, headline facts,
-   invariants) and run it — it must exit 0 before anything goes public. See
-   `scripts/README.md`.
-2. **Curate a `release` branch** for the public tree (fun tier drops
-   notebooks/src/scripts/config; serious tier keeps src + a reproducible
-   entrypoint). Force-add the CSV + codebook exports and the `docs/` charts.
-3. **`_config.yml`** (root, on both `main` and `release`): set `title:` to the
-   **project name** so the Cayman banner names the project — NOT the generic
-   `@unwelcomedata` (that leaves the page looking untitled). Put the brand in
-   `description:`. Theme is always `jekyll-theme-cayman` (shared identity).
-4. **README brand line** links `@unwelcomedata` to the **GitHub profile**
-   (`https://github.com/unwelcomedata`), never a self-link to the project's own
-   Pages URL.
-5. After publishing, **`git checkout main`** — leaving the repo on `release`
-   strips the notebooks from the working copy and looks like they vanished
-   (they're safe on `main`).
-
-## Anonymity
-
-Commits are authored as `unwelcomedata` to keep the author's real identity
-off the public commit history. Data files, exports, outputs, and `.env`
-secrets are excluded from version control via `.gitignore`.
