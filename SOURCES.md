@@ -53,7 +53,7 @@ not applicable or unknown, write "N/A" or "unknown" so it's clear it was conside
 ### PokéAPI
 - **Publisher:** PokéAPI (pokeapi.co) — a community-run, open REST API of Pokémon game data.
 - **URL:** https://pokeapi.co/api/v2 (endpoints `/pokemon-species`, `/pokemon-species/{id}`, `/pokemon/{id}`)
-- **Format:** JSON REST API (keyless, public). Pulled per-species and cached verbatim to `data/raw/`.
+- **Format:** JSON REST API (keyless, public). Pulled per-species and cached verbatim at retrieval, then transcribed one row per species.
 - **License:** PokéAPI data is freely available for use. Pokémon names, stats, and
   types are © Nintendo / Game Freak / The Pokémon Company — used here nominatively
   (fun-tier, non-commercial, attributed).
@@ -89,8 +89,7 @@ not applicable or unknown, write "N/A" or "unknown" so it's clear it was conside
   edge cases (Ultra Beasts, Paradox forms, convergent species). We follow PokéAPI's
   `is_legendary`/`is_mythical` flags and default-variety definition.
 - **Notes:** independent cross-checks (PokemonDB, Bulbapedia, PokemonRef, et al.)
-  confirmed the counts (94 legendary/mythical, 931 field) and the structural claims;
-  see the independent validation report in `artifacts/` (gitignored).
+  confirmed the counts (94 legendary/mythical, 931 field) and the structural claims.
 - **Retrieved:** 2026-10-05
 
 <!-- Add additional sources below this line -->
@@ -99,7 +98,7 @@ not applicable or unknown, write "N/A" or "unknown" so it's clear it was conside
 
 ## Notes on Data Quality
 
-- All source files are saved verbatim to `data/raw/` and never modified.
+- Source responses are preserved verbatim at retrieval and never modified.
 - Discrepancies between sources should be noted here and resolved explicitly.
 - **Series breaks:** whenever a source changed its definition or method mid-series,
   document the break date under that source and treat pre/post as separate series —
@@ -108,13 +107,4 @@ not applicable or unknown, write "N/A" or "unknown" so it's clear it was conside
   places, or sources), confirm they are defined the same way. If not, say so in the
   chart, the codebook, and any social copy.
 
----
 
-## Source Provenance in DuckDB
-
-Every table in `data/project.duckdb` has a corresponding entry in the
-`_sources` metadata table:
-
-```sql
-SELECT * FROM _sources;
-```
