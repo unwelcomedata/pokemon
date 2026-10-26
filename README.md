@@ -25,6 +25,8 @@ whole types, for each generation, and for legendaries versus everything else.
 
 _Click any chart to open it at full resolution._
 
+[![Pokémon stat fingerprints — infographic](docs/infographic_pokemon.png)](docs/infographic_pokemon.png)
+
 ## 1. Iconic stat fingerprints
 
 Twelve well-known Pokémon, each drawn as its own radar on the raw **0–255** stat
