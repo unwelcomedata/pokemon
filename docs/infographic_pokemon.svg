@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  @unwelcomedata — PROJECT INFOGRAPHIC (tall portrait poster)
+  Project: pokemon. Bespoke, data-driven poster off the shared brand frame.
+  All data marks computed from data/project.duckdb (chart_legendary_vs_field,
+  chart_type_avg, chart_generation_avg) — see artifacts/INFOGRAPHIC-VALIDATION.md.
+  Averages are BASE FORMS ONLY (megas/alt forms excluded). Canvas 1200 x 2560.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2560" viewBox="0 0 1200 2560" font-family="Helvetica, Arial, sans-serif">
+
+  <rect width="1200" height="2560" fill="#FBF8F0"/>
+
+  <!-- ============================================================= -->
+  <!-- HEADER BAND                                                   -->
+  <!-- ============================================================= -->
+  <rect x="0" y="0" width="1200" height="300" fill="#003049"/>
+  <text x="80" y="130" fill="#FFFFFF" font-size="70" font-weight="bold">Pok&#233;mon Stat Fingerprints</text>
+  <text x="80" y="195" fill="#94D2BD" font-size="40" font-weight="bold">What 1,025 Pok&#233;mon look like, measured six ways</text>
+  <text x="80" y="245" fill="#E9D8A6" font-size="26">Base stats (HP, Attack, Defense, Sp. Atk, Sp. Def, Speed) &#183; base forms only.</text>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 1 — LEGENDARIES ARE A TIER APART (radar)              -->
+  <!-- ============================================================= -->
+  <text x="80" y="390" fill="#003049" font-size="34" font-weight="bold">Legendaries are a tier apart</text>
+  <text x="80" y="424" fill="#6B7280" font-size="24">Average base stats: the 94 legendary/mythical Pok&#233;mon vs the 931 everyday field.</text>
+
+  <!-- BST big-number comparison -->
+  <text x="80" y="520" fill="#BB3E03" font-size="80" font-weight="bold">592</text>
+  <text x="80" y="558" fill="#6B7280" font-size="22">avg base-stat total &#8212; legendary / mythical</text>
+  <text x="1120" y="520" fill="#0A9396" font-size="80" font-weight="bold" text-anchor="end">411</text>
+  <text x="1120" y="558" fill="#6B7280" font-size="22" text-anchor="end">avg base-stat total &#8212; field</text>
+
+  <!-- radar: center 600,1000, R=300, axis ceiling 120. Reference hexagons at 40/80/120 -->
+  <!-- (re-centered to cy=1000 from the data computation which used 1380; shift = -380) -->
+  <polygon points="600.0,900.0 686.6,950.0 686.6,1050.0 600.0,1100.0 513.4,1050.0 513.4,950.0" fill="none" stroke="#E5E0D2" stroke-width="2"/>
+  <polygon points="600.0,800.0 773.2,900.0 773.2,1100.0 600.0,1200.0 426.8,1100.0 426.8,900.0" fill="none" stroke="#E5E0D2" stroke-width="2"/>
+  <polygon points="600.0,700.0 859.8,850.0 859.8,1150.0 600.0,1300.0 340.2,1150.0 340.2,850.0" fill="none" stroke="#D8D2C0" stroke-width="2"/>
+  <!-- spokes -->
+  <line x1="600" y1="1000" x2="600.0" y2="700.0" stroke="#D8D2C0" stroke-width="1.5"/>
+  <line x1="600" y1="1000" x2="859.8" y2="850.0" stroke="#D8D2C0" stroke-width="1.5"/>
+  <line x1="600" y1="1000" x2="859.8" y2="1150.0" stroke="#D8D2C0" stroke-width="1.5"/>
+  <line x1="600" y1="1000" x2="600.0" y2="1300.0" stroke="#D8D2C0" stroke-width="1.5"/>
+  <line x1="600" y1="1000" x2="340.2" y2="1150.0" stroke="#D8D2C0" stroke-width="1.5"/>
+  <line x1="600" y1="1000" x2="340.2" y2="850.0" stroke="#D8D2C0" stroke-width="1.5"/>
+
+  <!-- FIELD polygon (teal, underneath). Points = data y minus 380. -->
+  <polygon points="600.0,830.5 762.2,906.4 751.6,1087.5 600.0,1166.8 454.3,1084.1 460.6,919.5" fill="#0A9396" fill-opacity="0.22" stroke="#0A9396" stroke-width="4"/>
+  <!-- LEGENDARY polygon (spice/red, on top) -->
+  <polygon points="600.0,766.2 823.4,871.0 811.5,1122.1 600.0,1258.5 385.0,1124.1 394.8,881.5" fill="#BB3E03" fill-opacity="0.22" stroke="#BB3E03" stroke-width="4"/>
+
+  <!-- axis labels (tips at R+40 from center 600,1000) -->
+  <text x="600.0" y="660.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="middle">HP</text>
+  <text x="894.4" y="830.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="start">Attack</text>
+  <text x="894.4" y="1178.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="start">Defense</text>
+  <text x="600.0" y="1346.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="middle">Sp. Atk</text>
+  <text x="305.6" y="1178.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="end">Sp. Def</text>
+  <text x="305.6" y="830.0" fill="#003049" font-size="22" font-weight="bold" text-anchor="end">Speed</text>
+
+  <!-- legend -->
+  <rect x="430" y="1360" width="26" height="18" fill="#BB3E03" fill-opacity="0.5" stroke="#BB3E03" stroke-width="3"/>
+  <text x="466" y="1375" fill="#003049" font-size="21" font-weight="bold">Legendary / Mythical (94)</text>
+  <rect x="430" y="1390" width="26" height="18" fill="#0A9396" fill-opacity="0.5" stroke="#0A9396" stroke-width="3"/>
+  <text x="466" y="1405" fill="#003049" font-size="21" font-weight="bold">Field / everyday (931)</text>
+
+  <!-- takeaway -->
+  <text x="80" y="1452" fill="#003049" font-size="23">Legendaries sit outside the field on <tspan font-weight="bold">every one of the six stats</tspan> &#8212; not just the famous ones.</text>
+
+  <!-- divider -->
+  <line x1="80" y1="1500" x2="1120" y2="1500" stroke="#E9D8A6" stroke-width="3"/>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 2 — STEEL IS THE WALL (avg Defense by type)           -->
+  <!-- ============================================================= -->
+  <text x="80" y="1590" fill="#003049" font-size="34" font-weight="bold">Steel is the wall</text>
+  <text x="80" y="1624" fill="#6B7280" font-size="24">Average Defense by primary type &#8212; Steel stands well above every other type.</text>
+
+  <!-- bars: track x340 -> x1120 = 780px at max defense 111.1 -->
+  <!-- Steel 111.1 -> 780.0 -->
+  <text x="320" y="1690" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Steel</text>
+  <rect x="340" y="1668" width="780.0" height="34" fill="#6B7280"/>
+  <text x="1110" y="1693" fill="#FFFFFF" font-size="22" font-weight="bold" text-anchor="end">111</text>
+  <!-- Rock 98.1 -> 688.7 -->
+  <text x="320" y="1740" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Rock</text>
+  <rect x="340" y="1718" width="688.7" height="34" fill="#94D2BD"/>
+  <text x="1038.7" y="1743" fill="#003049" font-size="22" font-weight="bold">98</text>
+  <!-- Ground 85.9 -> 603.1 -->
+  <text x="320" y="1790" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Ground</text>
+  <rect x="340" y="1768" width="603.1" height="34" fill="#94D2BD"/>
+  <text x="953.1" y="1793" fill="#003049" font-size="22" font-weight="bold">86</text>
+  <!-- Ghost 75.5 -> 530.1 -->
+  <text x="320" y="1840" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Ghost</text>
+  <rect x="340" y="1818" width="530.1" height="34" fill="#94D2BD"/>
+  <text x="880.1" y="1843" fill="#003049" font-size="22" font-weight="bold">76</text>
+  <!-- Dragon 75.2 -> 528.0 -->
+  <text x="320" y="1890" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Dragon</text>
+  <rect x="340" y="1868" width="528.0" height="34" fill="#94D2BD"/>
+  <text x="878.0" y="1893" fill="#003049" font-size="22" font-weight="bold">75</text>
+  <!-- Ice 73.8 -> 518.1 -->
+  <text x="320" y="1940" fill="#003049" font-size="24" font-weight="bold" text-anchor="end">Ice</text>
+  <rect x="340" y="1918" width="518.1" height="34" fill="#94D2BD"/>
+  <text x="868.1" y="1943" fill="#003049" font-size="22" font-weight="bold">74</text>
+
+  <!-- divider -->
+  <line x1="80" y1="2000" x2="1120" y2="2000" stroke="#E9D8A6" stroke-width="3"/>
+
+  <!-- ============================================================= -->
+  <!-- SECTION 3 — POWER CREEP (avg BST by generation)              -->
+  <!-- ============================================================= -->
+  <text x="80" y="2090" fill="#003049" font-size="34" font-weight="bold">A slow power creep</text>
+  <text x="80" y="2124" fill="#6B7280" font-size="24">Average base-stat total by generation &#8212; newer Pok&#233;mon trend a little stronger.</text>
+
+  <!-- plot: x 160..1120 (gen1..9), y 2190..2360 (BST 400..460 -> 170px? recompute) -->
+  <!-- Use y 2200..2360 for bst 400..460: y = 2360 - (bst-400)/60*160 -->
+  <!-- gridlines at 400 / 430 / 460 -->
+  <line x1="160" y1="2200.0" x2="1120" y2="2200.0" stroke="#E5E0D2" stroke-width="2"/>
+  <text x="150" y="2206" fill="#9AA0A6" font-size="18" text-anchor="end">460</text>
+  <line x1="160" y1="2280.0" x2="1120" y2="2280.0" stroke="#E5E0D2" stroke-width="2"/>
+  <text x="150" y="2286" fill="#9AA0A6" font-size="18" text-anchor="end">430</text>
+  <line x1="160" y1="2360.0" x2="1120" y2="2360.0" stroke="#D8D2C0" stroke-width="2"/>
+  <text x="150" y="2366" fill="#9AA0A6" font-size="18" text-anchor="end">400</text>
+
+  <!-- BST line (teal). Points computed: x=160+(gen-1)/8*960, y=2360-(bst-400)/60*160 -->
+  <polyline fill="none" stroke="#0A9396" stroke-width="5" stroke-linejoin="round" points="160.0,2339.7 280.0,2340.8 400.0,2350.1 520.0,2238.4 640.0,2291.5 760.0,2281.7 880.0,2228.3 1000.0,2255.2 1120.0,2206.9"/>
+  <!-- generation markers (x positions) + labels -->
+  <text x="160" y="2390" fill="#6B7280" font-size="18" text-anchor="middle">Gen 1</text>
+  <text x="1120" y="2390" fill="#6B7280" font-size="18" text-anchor="middle">Gen 9</text>
+  <!-- endpoint value callouts -->
+  <text x="160" y="2328" fill="#0A9396" font-size="20" font-weight="bold" text-anchor="middle">408</text>
+  <text x="1120" y="2196" fill="#0A9396" font-size="20" font-weight="bold" text-anchor="middle">457</text>
+  <!-- caveat -->
+  <text x="80" y="2440" fill="#6B7280" font-size="20">A gentle rise, not a leap &#8212; the Gen 1 average 408 to Gen 9&#8217;s 457, driven partly by more legendaries.</text>
+
+  <!-- FOOTER BAND -->
+  <rect x="0" y="2470" width="1200" height="90" fill="#003049"/>
+  <text x="80" y="2515" fill="#FFFFFF" font-size="24" font-weight="bold">@unwelcomedata</text>
+  <text x="80" y="2545" fill="#94D2BD" font-size="18">Pok&#233;API (pokeapi.co) &#183; 1,025 species, all 9 generations; averages are base forms only (megas &amp; alt forms excluded).</text>
+</svg>
